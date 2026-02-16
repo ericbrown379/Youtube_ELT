@@ -1,5 +1,5 @@
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from pyscopg2 import RealDictCursor
+from psycopg2.extras import RealDictCursor
 
 table = "yt_api"
 

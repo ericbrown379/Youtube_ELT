@@ -14,7 +14,7 @@ def staging_table():
 
     schema = "staging"
 
-    conn, cur = None
+    conn, cur = None, None
 
     try:
 
