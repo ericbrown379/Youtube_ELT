@@ -1,2 +1,6 @@
 soda-core-postgres==3.3.14
 pytest==8.3.3
+streamlit==1.42.0
+pandas==2.2.3
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.9
