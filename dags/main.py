@@ -27,7 +27,6 @@ default_args = {
     'max_active_runs': 1,
     'dagrun_timeout': timedelta(hours=1),
     'start_date': datetime(2026, 2, 16, tzinfo=local_tz),
-    'end_date': datetime(2026, 2, 17, tzinfo=local_tz)
 }
 
 with DAG(
@@ -60,4 +59,3 @@ with DAG(
 
     # Define dependencies / task order
     update_staging >> update_core
-
