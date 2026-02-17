@@ -19,7 +19,7 @@ def test_dags_integrity(dagbag):
     print(dagbag.import_errors)
 
     # 2.
-    expected_dag_ids = ["produce_JSON", "update_db", "data_quality"]
+    expected_dag_ids = ["produce_json", "update_db", "data_quality"]
     loaded_dag_ids = list(dagbag.dags.keys())
     print("-------------")
     print(dagbag.import_errors)
