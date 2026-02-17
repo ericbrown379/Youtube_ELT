@@ -3,14 +3,24 @@ import pendulum
 import os
 import sys
 from datetime import datetime, timedelta
-from api.video_stats import (
-    get_playlistId, 
-    get_videoIds, 
-    extract_video_data, 
-    save_to_json
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+API_DIR = os.path.join(CURRENT_DIR, "api")
+DWH_DIR = os.path.join(CURRENT_DIR, "datawarehouse")
+DQ_DIR = os.path.join(CURRENT_DIR, "dataquality")
+for path in (API_DIR, DWH_DIR, DQ_DIR):
+    if path not in sys.path:
+        sys.path.insert(0, path)
+
+from video_stats import (
+    get_playlistId,
+    get_videoIds,
+    extract_video_data,
+    save_to_json,
 )
 
-from datawarehouse.dwh import staging_table, core_table
+from dwh import staging_table, core_table
+from soda import yt_elt_data_quality
 
 
 # Define local timezone
@@ -28,6 +38,10 @@ default_args = {
     'dagrun_timeout': timedelta(hours=1),
     'start_date': datetime(2026, 2, 16, tzinfo=local_tz),
 }
+
+# Variables
+staging_schema = "staging"
+core_schema = "core"
 
 with DAG(
     dag_id='produce_JSON',
@@ -59,3 +73,19 @@ with DAG(
 
     # Define dependencies / task order
     update_staging >> update_core
+
+
+with DAG(
+    dag_id='data_quality',
+    default_args=default_args,
+    description='DAG to check the data quality ion both layers in the db',
+    schedule='0 16 * * *',  # Run daily at 14:00 (2 PM)
+    catchup=False
+) as dag:
+
+    # Define the tasks
+    soda_validate_staging = yt_elt_data_quality(staging_schema)
+    soda_validate_core = yt_elt_data_quality(core_schema)
+
+    # Define dependencies / task order
+    soda_validate_staging >> soda_validate_core
